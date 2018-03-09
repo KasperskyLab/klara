@@ -1,0 +1,29 @@
+/* CSS Document */
+
+/* Fix because the style sheet for the datatables is on the microsoft CDN and 
+I can't modify it. Because of this I need to apply my rules that have the same priority in the browser.
+http://www.htmldog.com/guides/cssadvanced/specificity/
+
+A lot of duplicate code - BLEAH!
+
+*/
+
+table.datatable_table tbody tr.even td.sorting_1,
+table.datatable_table tbody tr.even td.sorting_2,
+table.datatable_table tbody tr.even td.sorting_3,
+table.datatable_table tbody tr.odd td.sorting_1,
+table.datatable_table tbody tr.odd td.sorting_2,
+table.datatable_table tbody tr.odd td.sorting_3,
+table.datatable_table td
+{
+	text-align: center;
+	background-color: #00B6B6;
+	font-weight:bold;
+	color:white;
+}
+
+table.datatable_table a
+{
+	color:white;
+	font-weight:bold;
+}

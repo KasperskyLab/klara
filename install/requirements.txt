@@ -1,0 +1,4 @@
+torndb
+requests
+tornado
+mysql-python

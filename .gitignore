@@ -1,0 +1,6 @@
+*.pyc
+*.err
+*.log
+dispatcher/config.py
+worker/config.py
+web/application/config/config.php

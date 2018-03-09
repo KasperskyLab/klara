@@ -1,0 +1,218 @@
+#!/usr/bin/env python
+
+import sys
+import time
+import logging
+import json
+import os
+import re
+
+import api_interface as api
+import functions
+import config
+
+def _check_config_vars ():
+    # ---- Check that the config variables are correct ----- #
+    if config.logging_level == "debug":
+        logging_level = logging.DEBUG
+    elif config.logging_level == "info":
+        logging_level = logging.INFO
+    elif config.logging_level == "warning":
+        logging_level = logging.WARNING
+    elif config.logging_level == "error":
+        logging_level = logging.ERROR
+    else:
+        print ("Invalid logging lvl in config:" + config.logging_level)
+        logging_level = logging.WARNING
+
+    # Setup logging
+    logging.basicConfig (
+        format  = '[%(asctime)s][%(levelname)s] %(message)s', 
+        datefmt = '%m/%d/%Y %I:%M:%S %p',
+        level   = logging_level
+    )
+    # TODO : Check all other variables as well
+
+# End helper functions
+
+if __name__ == "__main__":
+
+    _check_config_vars ()
+    logging.info(" ###### Starting KLara Worker ###### ")
+
+    # Except we run Celery, there's no better method than busy wait
+    while True:
+        dispatcher_answer = api.fetch_available_jobs()
+        # Step 1) Check if dispatcher gives us some jobs
+        available_job_id                = None
+        available_job_fileset_scan      = None
+        repository_info                 = None
+        results_path_replace_pattern    = None
+        results_path_replace_with       = None
+
+        if dispatcher_answer['status'] == "ok":
+            # Dispatcher sent us available jobs!
+
+            # Check the list to see if our virus_collection has
+            # The requested fileset_scan
+            available_jobs = json.loads(dispatcher_answer['return_data'])
+            our_virus_collection = config.virus_collection.rstrip("/")
+            for entry in available_jobs:
+                potential_scan_path = available_job_fileset_scan = our_virus_collection + entry['fileset_scan']
+                # If we indeed have this directory, then we want this job!
+                # We check the existence of the folder by checking if the repository_control_file exists
+                try:
+                    with open(potential_scan_path + "/" + config.virus_collection_control_file, 'r') as f:
+                        # We managed to successfully open the file!
+                        # If we had no errors, then the ID is ok!
+                        available_job_id = entry['id']
+                        # repository_info = json.loads(f.read())
+                        # If we are here, means that the JSON is valid!
+                        break
+                except IOError as e:
+                    # We won't enter in the 2nd stage, because available_job_id is None
+                    pass
+                except ValueError as e:
+                    logging.warning("Repository control file exists, but is malformed: %s" % str(e))
+                    available_job_id = entry['id']
+                    break
+                except Exception as e:
+                    logging.error("Unexpected error when opening the control file, will not continue %s" % str(e))
+
+        else:
+            # Dispatcher status is not ok,
+            if dispatcher_answer['status_msg'] == "connection_error":
+                logging.warning("Could not connect to dispatcher! Will retry soon..")
+            elif dispatcher_answer['status_msg'] == "error":
+                logging.warning("Dispatcher error: %s" % str(dispatcher_answer['status']))
+            else:
+                logging.error("Unexpected status received from dispatcher: %s " % str(dispatcher_answer['status']))
+
+        can_start_work = False
+        available_job_rules = None
+        # Step 2) for selected job try to acquire it!
+        if available_job_id is not None:
+            dispatcher_answer = api.request_assign_job(available_job_id)
+            if dispatcher_answer['status'] == "ok":
+                # Dispatcher status is ok
+                job_permission = json.loads(dispatcher_answer['return_data'])
+                if job_permission['status'] == "accepted":
+                    can_start_work = True
+                    available_job_rules = job_permission['rules']
+                else:
+                    logging.warning("Dispatcher rejected my request for job_id %s" % available_job_id)
+            else:
+                # Dispatcher status is NOT ok
+                if dispatcher_answer['status_msg'] == "connection_error":
+                    logging.warning("Could not connect to dispatcher! Will retry soon..")
+                elif dispatcher_answer['status_msg'] == "error":
+                    logging.warning("Dispatcher error: %s" % str(dispatcher_answer['status']))
+                else:
+                    logging.error("Unexpected status received from dispatcher: %s " % str(dispatcher_answer['status']))
+
+        # Step 3) If everything is fine, run the job!
+        if can_start_work:
+
+            # We now have the initial job_fileset_scan. and we know it's a directory!
+            # Now let's check if we don't get redirected by the virus_collection_control_file
+            control_file = available_job_fileset_scan + "/" + config.virus_collection_control_file
+            try:
+                with open(control_file, 'r') as f:
+                    # We managed to successfully open the file!
+                    # If we had no errors, then the ID is ok!
+                    available_job_id = entry['id']
+                    repository_info = json.loads(f.read())
+                    # If we are here, means that the JSON is valid!
+                    # Check if we have redirect_paths
+                    if 'redirect_paths' in repository_info and isinstance(repository_info['redirect_paths'], list):
+                        # Redirect_paths exists and is a list!
+                        # For the moment get only the first entry!
+                        possible_job_fileset_scan = repository_info['redirect_paths'][0]
+                        # Check that this first entry is a directory!
+                        if not os.path.isdir(possible_job_fileset_scan):
+                            logging.warning("Redirect paths possible fileset scan is not a dir: %s " % str(possible_job_fileset_scan))
+                        else:
+                            # We replace the current available job fileleset scan
+                            available_job_fileset_scan = possible_job_fileset_scan
+                    # Check if we have any results_path_replace_pattern instructions
+                    if ('results_path_replace_pattern'  in repository_info and
+                        'results_path_replace_with'     in repository_info and
+                        isinstance(repository_info['results_path_replace_pattern'], unicode) and
+                        isinstance(repository_info['results_path_replace_with'],    unicode)):
+                        # We have indeed a replace pattern!
+                        # Take into consideration that available_job_fileset_scan has no trailing slash when
+                        # Setting up the path_replace_with variable
+                        results_path_replace_pattern    = repository_info['results_path_replace_pattern']
+                        results_path_replace_with       = repository_info['results_path_replace_with']
+
+            except IOError as e:
+                logging.error("When checking for control_file redirection folder %s generated: %s" % (control_file, str(e)))
+            except ValueError as e:
+                logging.warning("Repository control file exists, but is broken: %s" % str(e))
+            except Exception as e:
+                logging.error("Unexpected error when opening the control file 2nd time, will not continue: %s" % str(e))
+
+            assert(available_job_id is not None)
+            assert(available_job_fileset_scan is not None)
+            assert(available_job_rules is not None)
+
+            # If we can start working, then we have the job_id and job_scan_path
+            logging.info("Accepted job_id %s to scan %s " % (available_job_id, available_job_fileset_scan))
+
+            scan_options = dict()
+            scan_options['fileset_scan']    = available_job_fileset_scan
+            scan_options['rules']           = available_job_rules
+
+            scan_results = functions.yara_scan(scan_options)
+
+            # Send the results
+            return_data = dict()
+            return_data['job_id']           = available_job_id
+            return_data['finish_time']      = scan_results['finish_time']
+            return_data['fileset_scan']     = available_job_fileset_scan
+            return_data['execution_time']   = scan_results['execution_time']
+            return_data['yara_errors']      = "false"
+            return_data['yara_warnings']    = "false"
+            yara_errors_warnings            = ""
+
+            # First, check if we got any errors from Yara.
+            if scan_results['yara_errors'] is not None:
+                return_data['yara_errors']  = "true"
+                yara_errors_warnings    += scan_results['yara_errors'] + "\n----------\n"
+
+            # Secondly, if we got any warnings, we show them first
+            if scan_results['yara_warnings'] is not None:
+                return_data['yara_warnings']  = "true"
+                yara_errors_warnings    += scan_results['yara_warnings'] + "\n----------\n"
+
+            matched_files = functions.extract_matched_files(scan_results['yara_results'])
+
+            # We need to find the md5 for each file that was matched
+            # These values will be sent to dispatcher, who will pack them into a dict!
+            return_data['md5_results']      = functions.generate_md5_from_results(matched_files)
+            return_data['matched_files']    = len(matched_files)
+            # Check if user wants to replace the results_path with whatever they wants + their pattern
+            if (results_path_replace_pattern is not None and
+                results_path_replace_with    is not None):
+                replace_pattern = available_job_fileset_scan + results_path_replace_pattern
+                # Let's replace the results paths with whatever admin wants
+                logging.info("Replacing results path with pattern: [" + replace_pattern + "] to [" + results_path_replace_with + "]")
+                scan_results['yara_results'] = re.sub(
+                    replace_pattern,
+                    results_path_replace_with, scan_results['yara_results'])
+
+            return_data['yara_results']     = yara_errors_warnings + scan_results['yara_results']
+
+            # logging.info (return_data)
+            dispatcher_status_code      = api.push_results(return_data)
+            # If dispatcher told us it can't save the results, we wait "refresh_new_jobs" * 2
+            # And try again.
+            if dispatcher_status_code != 200:
+                logging.warning("[JOB # " + str(available_job_id) + "] Could not push results to dispatcher, will retry 1 more time")
+                time.sleep(config.refresh_new_jobs * 2)
+                dispatcher_status_code  = api.push_results(return_data)
+                if dispatcher_status_code != 200:
+                    logging.error("[JOB # " + str(available_job_id) + "] Could not push results to dispatcher 2nd time, Results lost")
+        else:
+            # Now we want to sleep :)
+            time.sleep(config.refresh_new_jobs)

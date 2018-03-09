@@ -1,0 +1,195 @@
+#!/usr/bin/env python
+
+import sys
+import logging
+import tornado.ioloop
+import tornado.web
+import tornado.escape
+import config
+import torndb
+from interfaces import mysql as mysql_interface
+from interfaces import notification as notify_interface
+from interfaces import validators
+import json
+import re
+
+def _setup_logging ():
+    # ---- Check that the config variables are correct ----- #
+    if config.logging_level == "debug":
+        logging_level = logging.DEBUG
+    elif config.logging_level == "info":
+        logging_level = logging.INFO
+    elif config.logging_level == "warning":
+        logging_level = logging.WARNING
+    elif config.logging_level == "error":
+        logging_level = logging.ERROR
+    else:
+        print ("Invalid logging lvl in config:" + config.logging_level)
+        logging_level = logging.WARNING
+
+    # Setup logging
+    logging.basicConfig (
+        format  = '[%(asctime)s][%(levelname)s] %(message)s', 
+        datefmt = '%m/%d/%Y %I:%M:%S %p',
+        level   = logging_level
+    )
+    # TODO : Check all other variables as well
+
+def _prepare_email(results, notify_email):
+    validators.validate_agent_results(results)
+    assert (notify_email is not None)
+    assert (isinstance (results, dict))
+
+    body_message = "Job ID: " + str(results['job_id']) + "\r\n"
+    body_message += "Repository path: " + str(results['fileset_scan']) + "\r\n"
+    body_message += "Rules: "
+    for rule in results['all_rule_names']:
+        body_message += "%s, " % rule
+
+    # Delete the last , from rules
+    body_message = body_message[:-1] + "\r\n"
+    body_message += "Execution time: "  + str(results['execution_time']) + "\r\n"
+    body_message += "Results: \r\n"
+
+    if len(results['yara_results']) > 0:
+        # Append the md5s with the results
+        try:
+            md5s_list = "\r\n".join(json.loads(results['md5_results']))
+        except Exception:
+            md5s_list = "Error: Could not parse the JSON with md5s. Please contact an administrator"
+
+        body_message += md5s_list
+        body_message += "\r\n\r\n----------------------------------------------\r\n\r\n"
+        body_message += results['yara_results']
+    else:
+        body_message += "### Yara returned no results ###\r\n"
+
+    send_email = dict()
+    send_email['to'] = notify_email
+    send_email['subject'] = "[#KLara] Results for job ID " + str(results['job_id'])
+    send_email['body'] = body_message
+    return send_email
+
+# Function used to generate an API response
+def _api_generate_response(status = '', status_msg = '', return_data = None):
+    result = dict()
+    result['status']     = status
+    result['status_msg'] = status_msg
+    if return_data is not None:
+        result['return_data'] = return_data
+    return result
+
+def _api_generate_response_json(status = '', status_msg = '', return_data = None):
+    return json.dumps(_api_generate_response(status, status_msg, return_data))
+
+def _api_generate_error_json(error_msg):
+    return json.dumps(_api_generate_response("error", error_msg))
+
+
+# End helper functions
+
+class BaseHandler(tornado.web.RequestHandler):
+    @property
+    def db(self):
+        return self.application.db
+
+    @property
+    def notify(self):
+        return self.application.notify
+
+class ApiHandler(BaseHandler):
+    def post(self, api_method):
+        api_method = tornado.escape.url_escape (api_method, True)
+        auth = self.get_argument('auth', '')
+        agent_id = self.db.authorize_agent (auth)
+        if agent_id is None:
+            logging.warning("[!] Invalid agent auth: " + str(auth))
+            self.clear()
+            self.set_status (403)
+            self.finish (_api_generate_error_json('not_authorized'))
+            return
+        assert (agent_id is not None)
+
+        # This is done!
+        if api_method == "worker_fetch_available_jobs":
+            # Fetch all jobs that have status 'new', returning [{id:x, fileset_scan: ".."}, {}, ...]
+            jobs = self.db.fetch_available_jobs()
+            self.write(_api_generate_response_json("ok", "", jobs))
+
+        elif api_method == "worker_assign_job":
+            # print "Agent asked us to assign it a new job!"
+            job_id = self.get_argument ('job_id', '-1')
+            try:
+                int(job_id)
+            except Exception:
+                self.write(_api_generate_error_json("Invalid job_id"))
+            else:
+                worker_job = self.db.assign_new_job(agent_id, job_id)
+                logging.info("Assigned job id %s to worker %s" % (job_id, agent_id))
+                self.write(_api_generate_response_json("ok", "", worker_job))
+
+        elif api_method == "worker_save_results":
+            # print ("Worker wants to save the results")
+            results = self.get_argument ('results', '{}')
+            results = tornado.escape.json_decode (results)
+            if len (results) > 0:
+                validators.validate_agent_results(results)
+                # Checking to see if we need to tell the DB to mark the job as
+                # yara_error or finished
+                job_status = "yara_errors" if results['yara_errors'] == "true" else "finished"
+                self.db.save_agent_results(agent_id, results, job_status)
+                # We validated the results, so job_id is in there
+                # We need to fetch the job details
+                # Let's get the e-mail address and job_rules assigned to this job_id
+                (job_notify_email_address, job_rules)  = self.db.job_get_details(int(results['job_id']))
+                if job_notify_email_address is not None:
+                    # Find the 1st rule name
+                    results['all_rule_names'] = re.findall(r'^.*?rule (.*?)[\n{]', job_rules)
+                    prepared_email = _prepare_email(results, job_notify_email_address)
+                    # Now send an e-mail as well!
+                    send_email_status = self.notify.email(prepared_email)
+                    if not send_email_status:
+                        logging.warning("Could not send job finished e-mail!")
+            else:
+                logging.warning("Agent %s sent us empty results" % agent_id)
+
+            # We should return an error here anyway
+            self.write(_api_generate_response_json("ok"))
+        else:
+            raise tornado.web.HTTPError (404, "Method not found!")
+
+
+class MainHandler(BaseHandler):
+    def get(self):
+        self.write("Klara Job Dispatcher")
+
+if __name__ == "__main__":
+    _setup_logging()
+    logging.info(" ###### Starting KLara Job Dispatcher ###### ")
+
+    app = tornado.web.Application(
+        [
+            (r"/", MainHandler),
+            (r"/api/(.*)", ApiHandler),
+        ]
+        #template_path=os.path.join(os.path.dirname(__file__), "templates"),
+        #static_path=os.path.join(os.path.dirname(__file__), "static"),
+        #xsrf_cookies=True,
+        )
+
+    db_handler = torndb.Connection(
+        host        = config.mysql_host,
+        database    = config.mysql_database,
+        user        = config.mysql_user,
+        password    = config.mysql_password)
+
+    # setup the database interface
+    app.db = mysql_interface (db_handler)
+    # setup the notify interface
+    app.notify = notify_interface ()
+
+    # Do initial work stuff
+    # End initial work
+
+    app.listen(config.listen_port)
+    tornado.ioloop.IOLoop.instance().start()
