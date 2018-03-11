@@ -1,6 +1,6 @@
 # GReAT's KLara project
 
-Klara project is aimed at helping Threat Intelligence researechers hunt for new 
+Klara project is aimed at helping Threat Intelligence researchers hunt for new 
 malware using [Yara](https://github.com/VirusTotal/yara).
 
 In order to hunt efficiently for malware, one needs a large collection of samples to search over. 
