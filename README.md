@@ -1,6 +1,6 @@
 # GReAT's KLara project
 
-Klara project is aimed at helping Threat Intelligence researechers hunt for new 
+Klara project is aimed at helping Threat Intelligence researchers hunt for new 
 malware using [Yara](https://github.com/VirusTotal/yara).
 
 In order to hunt efficiently for malware, one needs a large collection of samples to search over. 
@@ -17,7 +17,7 @@ over collections with samples, getting notifies by e-mail as well as the web int
 - Powerful API, allowing for automatic Yara jobs submissions, checking their status and getting back results. API Documentation will be released soon.
 - Distributed system, running on commodity hardware
 
-# Arhitecture
+# Architecture
 
 Klara leverages Yara's power, distributing scans using a dispatcher-worker model. Each worker server connects to a dispatcher
 trying to check if new jobs are avaibale. If a new job is indeed available, it checks to see if the required scan repository is
