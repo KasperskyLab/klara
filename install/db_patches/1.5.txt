@@ -1,1 +1,0 @@
-ALTER TABLE `jobs` ADD `results` MEDIUMBLOB NOT NULL AFTER `description`, ADD `rules` MEDIUMBLOB NOT NULL AFTER `results`;

@@ -1,3 +1,0 @@
-ALTER TABLE `jobs` ADD `share_key` VARCHAR(65) NULL DEFAULT NULL AFTER `finish_time`, ADD UNIQUE (`share_key`);
-# Now populate the share key
-UPDATE jobs set share_key = SHA2(CONCAT(RAND(), RAND(),'beCA5kjYbVjHiNDkMjP9JUVLmuXfmJ0tzRhp9yOM', RAND()), 256);

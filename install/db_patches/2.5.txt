@@ -1,2 +1,0 @@
-CREATE TABLE `jobs_hashes` ( `cnt` INT NOT NULL AUTO_INCREMENT , `job_id` INT NOT NULL , `hash_md5` VARCHAR(32) NOT NULL , PRIMARY KEY (`cnt`)) ENGINE = InnoDB;
-ALTER TABLE  `jobs_hashes` ADD UNIQUE (`job_id`, `hash_md5`);

@@ -1,5 +1,0 @@
-ALTER TABLE `users` ADD `api_auth_code` VARCHAR(127) NULL DEFAULT NULL AFTER `desc`, ADD `api_perms` VARCHAR(511) NOT NULL AFTER `api_auth_code`, ADD `api_status` INT(10) NOT NULL DEFAULT '0' AFTER `api_perms`;
-ALTER TABLE `users` ADD UNIQUE (`api_auth_code`);
-DROP table `users_api`;
-
-
