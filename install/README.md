@@ -321,7 +321,7 @@ Optionally, just for usability, you should write some info about the repository:
 {"owner": "John Doe", "files_type": "elf", "repository_type": "APT"}
 ```
 
-Scan Repository control file also has some interesting modifiers that can be used to manipulate Yara scan or results. For further info, please check [Advanced usage](advanced_usage.md)
+Scan Repository control file also has some interesting modifiers that can be used to manipulate Yara scan or results. For further info, please check [Advanced usage](features_advanced.md)
 
 # Web interface installation
 
