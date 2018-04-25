@@ -276,29 +276,59 @@ cd /opt/
 ln -s yara-3.x.x/ yara-latest
 ```
 
-## Setting up worker's scan repositories (virus collections)
+## Setting up worker's scan repositories and virus collection
 
-Each time workers contact the Dispatcher in order to check if there are new jobs, they will check if they can execute these jobs. 
-Basically, if a new job to scan `/mach-o_collection` can be picked up by a free worker, with the following `config.py` settings:
+Each time workers contact the Dispatcher in order to check if there are new jobs, they will check if they can execute these jobs. Klara was designed such as:
+* each worker agent has a (root) virus collection where all the scan repositories should exist (setting `virus_collection` from `config.py`)
+* multple `scan repositories` will be checked by KLara worker when trying to accept a job. (for example, if one wants to scan `/clean` repository, the worker agent will
+try to check if it's capable of scanning it, by checking inside his `virus_collection` folder )
+* in order to check if it's capable of scannng a particular `scan repository`, worker checks if the collection control file exist (setting `virus_collection_control_file` from `config.py`) at the location: `virus_collection` + `scan repository` + / + `virus_collection_control_file`.
+
+Basically, if a new job to scan `/mach-o_collection` is to be picked up by a free worker with the following `config.py` settings:
 
 ```
-virus_collection                = "/var/projects/klara/repository"
-virus_collection_control_file   = "repository_control.txt"
+virus_collection                = "/mnt/nas/klara/repository"
+virus_collection_control_file   = "repo_ctrl.txt"
 ``` 
-it will check if it has the following file/folders:
+then the worker will check if it has the following file and folders structures:
 ```
-/var/projects/klara/repository/mach-o_collection/repository_control.txt
+/mnt/nas/klara/repository/mach-o_collection/repo_ctrl.txt
 ```
 
-If this file and the corresponding folders exist, then the Worker will accept the job and start the yara scan with the specified job rules searching files in parent folder
+If this file exists at this particular path, then the Worker will accept the job and start the Yara scan with the specified job rules searching files in
 `/var/projects/klara/repository/mach-o_collection/`
+
+It is entirely up to you how to organize your scan repositories. An example of organizing directory `/mnt/nas/klara/repository`:
+
+* `/clean`
+* `/mz`
+* `/elf`
+* `/mach-o`
+* `/vt`
+* `/unknown`
+
+## Repository control
+
+KLara worker checks only if the repository control file exists in order to prepare to run the Yara scan. Contents of the file should only be an empty JSON string:
+
+```
+{}
+```
+
+Optionally, just for usability, you should write some info about the repository:
+
+```
+{"owner": "John Doe", "files_type": "elf", "repository_type": "APT"}
+```
+
+Scan Repository control file also has some interesting modifiers that can be used to manipulate Yara scan or results. For further info, please check [Advanced usage](advanced_usage.md)
 
 # Web interface installation
 
-Requirements for installing the web interface are:
+Requirements for installing web interface are:
 
 - web server running at least PHP 5.6
-- the following php5 extensions should be installed:
+- the following php5 extensions:
 
 ```
 apt install php7.0-fpm php7.0 php7.0-mysqli php7.0-curl php7.0-gd php7.0-intl php-pear php-imagick php7.0-imap php7.0-mcrypt php-memcache  php7.0-pspell php7.0-recode php7.0-sqlite3 php7.0-tidy php7.0-xmlrpc php7.0-xsl php7.0-mbstring php-gettext php-apcu
@@ -316,8 +346,33 @@ More info about this here:
 - https://codeigniter.com/user_guide/libraries/encryption.html
 - https://www.codeigniter.com/user_guide/database/configuration.html
 
+For your convenience, 2 `users`, 2 `groups` and 2 `scan repositories` have been created:
 
-======
+* Users:
+
+| Username      | Password                | Auth level  | Group ID   | Quota |
+| ------------- |:-------------:          | :---------- | ---------  | :---- |
+| admin         | `super_s3cure_password` | 16 (Admin)  | 2 (admins) | N/A (Admins don't have quuota) |
+| john          | `super_s3cure_password` | 4 (Observer)| 1 (main)   | 1000 scans |
+
+* Groups
+
+| Group name    | `scan_filesets_list` (scan repositories) | Jail status |
+| ------------- | :-------------                           | ----------- |
+| main          | `[1,2]`                                  | 0 (OFF - Users are not jailed) |
+| admins        | `[1,2]`                                  | 0 (OFF - Users are not jailed) |
+
+* Scan Repositories (`scan_filesets` DB table)
+
+| Scan Repository   |
+| -------------     |
+| /virus_repository |
+| /_clean           |
+
+
+For more info about Web features (creating / deleting users, user quotas, groups, auth levels, etc..), please check dedicated page [Web Features](features_web.md)
+
+--------
 
 That's it! If you have any issues with installing this software, please submit a bug report. Happy hunting!
 
