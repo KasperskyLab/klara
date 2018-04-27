@@ -2,7 +2,7 @@
 
 ## Requirements for running Klara:
 
-- GNU/Linux (we recommend Ubuntu 16.04 or latest LTS)
+- GNU/Linux (we recommend `Ubuntu 16.04` or latest LTS)
 - MySQL / MariaDB DB
 - Python 2.7
 - Python virtualenv package
@@ -39,7 +39,7 @@ Components are connected between themselves as follows:
 
 
 ```
-Workers connect to Dispatcher using a simple HTTP REST API. Dispatcher and the Web server 
+Workers connect to Dispatcher using a simple `HTTP REST API`. Dispatcher and the Web server 
 connect the MySQL / MariaDB Database using TCP connections. Because of this, components can be installed on 
 separated machines / VMs. The only requirements is that TCP connections are allowed between them.
 
@@ -49,7 +49,24 @@ Since entire project is written in Python, Dispatcher and Workers can be set up 
 
 ## Database installation
 
-Please refer to these [instructions](database.md)
+Please install a MySQL database (we recommend MariaDB) and make it accessible for Dispatcher and Web Interface.
+
+To create a new DB user, allowing access to `klara` database, for any hosts, identified by password `pass12345` use the following command:
+
+```
+##### For the klara DB #####
+# Create a random password for the user klara for the DB klara
+CREATE USER 'klara'@'127.0.0.1' IDENTIFIED BY 'pass12345';
+GRANT USAGE ON *.* TO 'klara'@'127.0.0.1' IDENTIFIED BY 'pass12345' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
+GRANT ALL PRIVILEGES ON `klara`.* TO 'klara'@'127.0.0.1';
+
+```
+
+Once Dispatcher and Web Interfaces are set-up and configured to point to the DB, the MySQL schema needs to be created. Please run the SQL statements from [db_patches/db_schema.txt](db_patches/db_schema.txt) location:
+
+```
+mysql [connecting options] < db_schema.sql
+```
 
 ## Dispatcher installation
 
@@ -80,7 +97,7 @@ mkdir /var/projects/klara/ -p
 # Create the virtual-env
 virtualenv ~/.virtualenvs/klara
 ```
-From now one, all commands will be run under `projects` user
+From now on, all commands will be executed under `projects` user
 
 Clone the repository:
 
@@ -149,6 +166,15 @@ sudo supervisorctl start klara_dispatcher start
 
 # Worker installation
 
+## Setting up an API key to be used by a worker
+
+Each worker should have its own unique assigned API key. This helps maintaining strict access controls.
+
+In order to insert a new API key to be used by a KLara worker, a new row needs to be inserted into DB table `agents` with the following entries:
+
+* `description` - Short description for the worker (up to 63 chars)
+* `auth` - API auth code (up to 63 chars)
+
 
 Install the packages needed to run Worker:
 ```
@@ -194,6 +220,8 @@ pip install -r ~/klara-github-repo/install/requirements.txt
 ```
 
 Now fill in the settings in config.py:
+
+**Note**: use the API key you just inserted in table `agents` above
 
 ```
 # Setup the loglevel
@@ -269,7 +297,7 @@ sudo make install
 
 Now you should have the chosen yara version installed on `/opt/yara-x.x.x/`
 
-Create a symlink to the latest version, so when we update Yara, workers don't have to be reconfigured:
+Create a symlink to the latest version, so when we update Yara, workers don't have to be reconfigured / restarted:
 ```
 # Make a symlink to the actual folder
 cd /opt/
@@ -278,11 +306,10 @@ ln -s yara-3.x.x/ yara-latest
 
 ## Setting up worker's scan repositories and virus collection
 
-Each time workers contact the Dispatcher in order to check if there are new jobs, they will check if they can execute these jobs. Klara was designed such as:
+Each time workers contact Dispatcher in order to check for new jobs, will verify first if they can execute them. Klara was designed such as:
 * each worker agent has a (root) virus collection where all the scan repositories should exist (setting `virus_collection` from `config.py`)
-* multple `scan repositories` will be checked by KLara worker when trying to accept a job. (for example, if one wants to scan `/clean` repository, the worker agent will
-try to check if it's capable of scanning it, by checking inside his `virus_collection` folder )
-* in order to check if it's capable of scannng a particular `scan repository`, worker checks if the collection control file exist (setting `virus_collection_control_file` from `config.py`) at the location: `virus_collection` + `scan repository` + / + `virus_collection_control_file`.
+* multple `scan repositories` will be checked by KLara workers when trying to accept a job. (for example, if one wants to scan `/clean` repository, Worker agent will try to check if it's capable of scanning it, by checking his `virus_collection` folder )
+* in order to check if it's capable of scannng a particular `scan repository`, Worker checks if the collection control file exists (setting `virus_collection_control_file` from `config.py`) at the location: `virus_collection` + `scan repository` + / + `virus_collection_control_file`.
 
 Basically, if a new job to scan `/mach-o_collection` is to be picked up by a free worker with the following `config.py` settings:
 
@@ -295,8 +322,7 @@ then the worker will check if it has the following file and folders structures:
 /mnt/nas/klara/repository/mach-o_collection/repo_ctrl.txt
 ```
 
-If this file exists at this particular path, then the Worker will accept the job and start the Yara scan with the specified job rules searching files in
-`/var/projects/klara/repository/mach-o_collection/`
+If this file exists at this particular path, then Worker will accept the job and start the Yara scan with the specified job rules, searching files in `/var/projects/klara/repository/mach-o_collection/`
 
 It is entirely up to you how to organize your scan repositories. An example of organizing directory `/mnt/nas/klara/repository`:
 

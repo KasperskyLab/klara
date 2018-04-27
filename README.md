@@ -9,7 +9,7 @@ In some cases, the rule needs adjusting. Unfortunately, scanning a large collect
 Instead, if a custom architecture is used, scanning 10TB of files can take around 30 minutes.
 
 Klara, a distributed system written in Python, allows researchers to scan one or more Yara rules 
-over collections with samples, getting notifies by e-mail as well as the web interface when scan results are ready. 
+over collections with samples, getting notifies by e-mail as well as the web interface when scan results are ready.
 
 # Features
 
@@ -23,8 +23,7 @@ Klara leverages Yara's power, distributing scans using a dispatcher-worker model
 trying to check if new jobs are avaibale. If a new job is indeed available, it checks to see if the required scan repository is
 available on its own filesystem and, if it is, it will start the Yara scan with the rules submitted by the researcher 
 
-The main issue Klara tries to solve is running Yara jobs over a large collection of malware samples (>1TB) in a resonable amount
-of time. 
+The main issue Klara tries to solve is running Yara jobs over a large collection of malware samples (>1TB) in a resonable amount of time.
 
 
 # Installing Klara
@@ -47,6 +46,7 @@ KLara team would like to thank
 
 - Costin, Marco, Vitaly, Sergey
 - Current, future and former GReAT members!
-- Alex
+- Alex@grep
+- All contributors
 
 for their amazing input and ideas. Happy hunting!

@@ -1,5 +1,12 @@
 ## Advanced features
 
+# Hash checking
+
+For administrator users, `Advanced Search` page is available, allowing them to check how many KLara jobs matched a particular MD5 or a list of MD5s.
+
+Admins can use this feature to check if tho KLara rules generate the same results.
+
+
 # Virus Collection control file
 
 As outlined in [installation steps](README.md), this file defines whether a specific scan repository (virus collection) repository will be scanned by one KLara worker or not. 
@@ -9,13 +16,13 @@ Furthermore, this file can define some options in order to modify the behaviour 
 
 This JSON entry needs to be a list of alternative paths that should be scanned *instead* of the actual folder that exists on the disk (currently only the first entry in the config list is take into consideration). For example, if the control file is located at the following absolute path:
 
-`/mnt/storage/vircol/virustotal_samples/repository_control.txt`
+`/mnt/storage/vircol/vt_samples/repository_control.txt`
 
 and contains the following JSON entry:
 
 `{"owner": "John Doe", "files_type": "elf", "repository_type": "APT", "redirect_paths": ["/mnt/nas/klara_bigger_collection/"]}`
 
-then KLara will **not** Yara scan directory `/mnt/storage/vircol/virustotal_samples/`, but instead it will try to start in `/mnt/nas/klara_bigger_collection/`.
+then KLara will **not** Yara scan directory `/mnt/storage/vircol/vt_samples/`, but instead it will try to start in `/mnt/nas/klara_bigger_collection/`.
 
 NOTE: This is useful if one is using dynamic repositories or is generating repositories on the fly. It is also useful for expanding one scan repository into multiple paths. Currently this feature is not implemented, since KLara worker only fetches the first entry in the config list. But theoretically, one could add multiple folders:
 

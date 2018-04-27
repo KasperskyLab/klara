@@ -24,9 +24,6 @@ class Admin_tools extends CI_Controller
         {
             $klara_location = "https://127.0.0.1/";
             echo "Here are your login details for accessing GReAT KLara system located at $klara_location\n";
-            echo "\n* Htaccess login:\n";
-            echo "User: $user_name\n";
-            echo "Pass: $user_pass\n";
             echo "\n* Web login:\n";
             echo "User: $user_name\n";
             echo "Pass: $user_pass\n";
