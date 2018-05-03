@@ -58,7 +58,7 @@ Based on the above example, here are some pattern examples:
 | "`.*/`"	   	| `/mnt/storage/vircol/vt_samples.*/`         | Matches the entire path, **leaving** file name intact |
 | "`/test/*`"	| `/mnt/storage/vircol/vt_samples/test/*`     | Matches a directory called /test/ in the scan repository, everything else won't be changed |
 | "`/`"     	| `/mnt/storage/vircol/vt_samples/`           | Matches the prefix from `virus_collection`, up to scan repository
-| "" (empty string)| `/mnt/storage/vircol/vt_samples`         | Same as above **Note**: notice the missing `"/"`
+| "" (empty string)| `/mnt/storage/vircol/vt_samples`         | Same as above (notice the missing `"/"`)
 | "`/file.exe`" | `/mnt/storage/vircol/vt_samples/file.exe`   | Replaces the full path of a file
 
 As such, if Virus Collection control file contains:

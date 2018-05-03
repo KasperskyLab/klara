@@ -4,7 +4,7 @@ class Admin_tools extends CI_Controller
 {
 
     // Since there is no admin control, here are the tools allowing anyone 
-    // These functinos are used to
+    // These functions are used to
     // - gen_pass => generate a secure password + the corresponding bcrypt hash 
     // - generate_users => generate user accounts + passwords as well as the relevant SQL statements in order to be inserted in the DB server
     // 
