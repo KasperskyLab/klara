@@ -1,11 +1,11 @@
 ## Setting up supervisord
 
-For every machine / VM running either Dispatcher, Worker or both, we will be running them with the help of [`supervisord`](http://supervisord.org)
+For every machine / VM running either Dispatcher, Worker or both, needs to use [`supervisord`](http://supervisord.org) in order to automate staring and stopping of KLara scripts.
 
 Installing supervisor is covered on their official website: http://supervisord.org/installing.html
 
-Once you have `supervisord` installed, deploy the following scripts in the config 
-folder for `supervisord` (usually it's `/etc/supervisor/conf.d`)
+Once you have `supervisord` installed, install the following scripts in the config
+folder for `supervisord` (usually `/etc/supervisor/conf.d`)
 
 # Supervisor settings for Dispatcher
 ```

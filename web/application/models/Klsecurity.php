@@ -54,7 +54,7 @@ class Klsecurity extends CI_Model
         {
             $this_controller_restriction = $this->controller_perms[$controller_full_path];
             $this->authorized_for_level($this_controller_restriction);
-            // If we got there, then everything's fine!
+            // If we got there, then every-thing's fine!
             $user_carry_on = true;
         }
         // If the full path is not in the list of controllers, maybe it's an API endpoint
