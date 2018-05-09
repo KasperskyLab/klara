@@ -150,6 +150,7 @@ sudo su projects
 # We want to enable the virtualenv
 source  ~/klara-github-repo/install/activate.sh
 cd /var/projects/klara/dispatcher/
+chmod u+x ./klara-dispatcher
 ./klara-dispatcher
 ```
 If everything went well, you should see:
@@ -268,6 +269,7 @@ sudo su projects
 # We want to enable the virtualenv
 source  ~/klara-github-repo/install/activate.sh
 cd /var/projects/klara/worker/
+chmod u+x ./klara-worker
 ./klara-worker
 ```
 
