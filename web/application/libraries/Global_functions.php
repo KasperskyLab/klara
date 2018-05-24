@@ -11,12 +11,12 @@ class Global_functions
 
         // Maximum size for repository name
         $this->repository_post_max_len  = 20;
-        // Maximum rule name length when limitig
+        // Maximum rule name length when limiti
         $this->rule_name_start_trimm = 64;
     }
 
     // This function takes an extra third parameter which can be null or not
-    // It doesn't break the behaviour of existing AJAX requests
+    // It doesn't break the behavior of existing AJAX requests
     public function api_generate_response_json($status = '', $status_msg = '', $return_data = null)
     {
         return json_encode ($this->api_generate_response($status, $status_msg, $return_data));
@@ -175,7 +175,7 @@ class Global_functions
         }
         return $scan_filesets_array;
     }
-    // This function will return true or false whather an
+    // This function will return true or false whether
     // an user_id (if specified) or the current user (if blank)
     // is jailed by the group policies
     // By default it returns true if the user_id is invalid or doesn't exist

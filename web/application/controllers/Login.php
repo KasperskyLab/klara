@@ -23,7 +23,7 @@ class Login extends CI_Controller
     }
     function __invalid_login($username = "")
     {
-        $this->klsecurity->log('alert', 'login', "Failed authentification. [ Username : {$username} ]");
+        $this->klsecurity->log('alert', 'login', "Failed auth. [ Username : {$username} ]");
 
         $data['msg'] = "Invalid username or password";
         $data['status'] = 401;

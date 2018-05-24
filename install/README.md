@@ -96,6 +96,7 @@ Substitute to projects user and create the virtual env + folders needed to run t
 ```
 su projects
 mkdir /var/projects/klara/ -p
+mkdir /var/projects/klara/logs/
 # Create the virtual-env
 virtualenv ~/.virtualenvs/klara
 ```
@@ -103,7 +104,7 @@ virtualenv ~/.virtualenvs/klara
 Clone the repository:
 
 ```
-git clone git@github.com:kasperskylab/klara.git ~/klara-github-repo
+git clone https://github.com/KasperskyLab/klara.git ~/klara-github-repo
 ```
 
 Copy Dispatcher's files and install python dependencies:
@@ -111,6 +112,7 @@ Copy Dispatcher's files and install python dependencies:
 cp -R ~/klara-github-repo/dispatcher /var/projects/klara/dispatcher/
 cd /var/projects/klara/dispatcher/
 cp config-sample.py config.py
+source ~/klara-github-repo/install/activate.sh
 pip install -r ~/klara-github-repo/install/requirements.txt
 ```
 
@@ -182,7 +184,7 @@ In order to insert a new API key to be used by a KLara worker, a new row needs t
 
 Install the packages needed to run Worker:
 ```
-sudo apt -y install python-virtualenv python-dev git
+sudo apt -y install python-virtualenv libmysqlclient-dev python-dev git
 ```
 
 We recommend running Worker using a non-privileged user. Create an user which will be responsible to run Worker as well as Dispatcher:
@@ -206,6 +208,7 @@ Substitute to projects user and create the virtual env + folders needed to run t
 ```
 su projects
 mkdir /var/projects/klara/ -p
+mkdir /var/projects/klara/logs/
 # Create the virtual-env
 virtualenv ~/.virtualenvs/klara
 ```
@@ -213,7 +216,7 @@ virtualenv ~/.virtualenvs/klara
 Clone the repository:
 
 ```
-git clone git@github.com:kasperskylab/klara.git ~/klara-github-repo
+git clone https://github.com/KasperskyLab/klara.git ~/klara-github-repo
 ```
 
 Copy Worker's files to the newly created folder and install python dependencies:
@@ -221,6 +224,7 @@ Copy Worker's files to the newly created folder and install python dependencies:
 cp -R ~/klara-github-repo/worker /var/projects/klara/worker/
 cd /var/projects/klara/worker/
 cp config-sample.py config.py
+source ~/klara-github-repo/install/activate.sh
 pip install -r ~/klara-github-repo/install/requirements.txt
 ```
 
