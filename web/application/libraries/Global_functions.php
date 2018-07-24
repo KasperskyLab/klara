@@ -273,13 +273,13 @@ class Global_functions
                     $non_ascii_message =    "Rule contains non-ASCII chars between '" . $message_before .
                                             "' AND '" . $message_after . "'";
                 else
-                    $non_ascii_message =    "Rule contains non-ASCII charachets between <pre>".
+                    $non_ascii_message =    "Rule contains non-ASCII chars between <pre>".
                                         $message_before . "</pre> AND <pre>".
                                         $message_after . "</pre>";
                 return $this->api_generate_error_json($non_ascii_message);
             }
             else
-                return $this->api_generate_error_json("Rule contains non-ASCII characters. Please retry");
+                return $this->api_generate_error_json("Rule contains non-ASCII chars. Please retry");
         }
 
         if (!is_array($yara_fileset_scan))
