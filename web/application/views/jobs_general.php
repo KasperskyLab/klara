@@ -172,7 +172,7 @@
                                 <?php echo $delete_button; ?>
                         </div>
                     </td>
-                </td>
+                </tr>
                 <?php
                     }
                 ?>
