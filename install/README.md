@@ -294,8 +294,6 @@ Next step would be starting Worker using `supervisorctl`:
 ```
 sudo supervisorctl update
 sudo supervisorctl start klara_worker 
-```
-
 
 ## Installing Yara on worker machines
 
