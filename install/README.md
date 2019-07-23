@@ -282,7 +282,8 @@ In order to start Worker automatically at boot, please check [Supervisor install
 
 Next step would be starting Worker using `supervisorctl`:
 ```
-sudo supervisorctl start klara_worker start
+sudo supervisorctl update
+sudo supervisorctl start klara_worker
 ```
 
 
