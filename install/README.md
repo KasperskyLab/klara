@@ -56,16 +56,17 @@ To create a new DB user, allowing access to `klara` database, for any hosts, ide
 ```
 ##### For `klara` DB #####
 # Please use random/secure password for user 'klara' on DB 'klara'
+CREATE DATABASE klara;
 CREATE USER 'klara'@'127.0.0.1' IDENTIFIED BY 'pass12345';
 GRANT USAGE ON *.* TO 'klara'@'127.0.0.1' IDENTIFIED BY 'pass12345' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
 GRANT ALL PRIVILEGES ON `klara`.* TO 'klara'@'127.0.0.1';
-
+GRANT ALL PRIVILEGES ON `klara`.* TO 'klara'@'localhost';
 ```
 
 Once Dispatcher and Web Interfaces are set-up and configured to point to DB, the SQL DB needs to be created. Please run the SQL statements from [db_patches/db_schema.sql](db_patches/db_schema.sql) location:
 
 ```
-mysql [connecting options] < db_schema.sql
+mysql klara < db_schema.sql
 ```
 
 ## Dispatcher installation
@@ -96,6 +97,7 @@ Substitute to projects user and create the virtual env + folders needed to run t
 ```
 su projects
 mkdir /var/projects/klara/ -p
+mkdir /var/projects/klara/logs/
 # Create the virtual-env
 virtualenv ~/.virtualenvs/klara
 ```
@@ -103,7 +105,7 @@ virtualenv ~/.virtualenvs/klara
 Clone the repository:
 
 ```
-git clone git@github.com:kasperskylab/klara.git ~/klara-github-repo
+git clone https://github.com/KasperskyLab/klara.git ~/klara-github-repo
 ```
 
 Copy Dispatcher's files and install python dependencies:
@@ -111,6 +113,7 @@ Copy Dispatcher's files and install python dependencies:
 cp -R ~/klara-github-repo/dispatcher /var/projects/klara/dispatcher/
 cd /var/projects/klara/dispatcher/
 cp config-sample.py config.py
+source ~/klara-github-repo/install/activate.sh
 pip install -r ~/klara-github-repo/install/requirements.txt
 ```
 
@@ -162,7 +165,8 @@ In order to start Dispatcher automatically at boot, please check [Supervisor ins
 
 Next step would be starting Dispatcher using `supervisorctl`:
 ```
-sudo supervisorctl start klara_dispatcher start
+sudo supervisorctl update
+sudo supervisorctl start klara_dispatcher
 ```
 
 
@@ -177,12 +181,16 @@ In order to insert a new API key to be used by a KLara worker, a new row needs t
 * `description` - Short description for the worker (up to 63 chars)
 * `auth` - API auth code (up to 63 chars)
 
+```
+mysql > use klara;
+mysql > INSERT INTO projetcs value ("","description here", "API auth code here");
+```
 
 ## Installing the Worker agent
 
 Install the packages needed to run Worker:
 ```
-sudo apt -y install python-virtualenv python-dev git
+sudo apt -y install python-virtualenv libmysqlclient-dev python-dev git
 ```
 
 We recommend running Worker using a non-privileged user. Create an user which will be responsible to run Worker as well as Dispatcher:
@@ -206,6 +214,7 @@ Substitute to projects user and create the virtual env + folders needed to run t
 ```
 su projects
 mkdir /var/projects/klara/ -p
+mkdir /var/projects/klara/logs/
 # Create the virtual-env
 virtualenv ~/.virtualenvs/klara
 ```
@@ -213,7 +222,7 @@ virtualenv ~/.virtualenvs/klara
 Clone the repository:
 
 ```
-git clone git@github.com:kasperskylab/klara.git ~/klara-github-repo
+git clone https://github.com/KasperskyLab/klara.git ~/klara-github-repo
 ```
 
 Copy Worker's files to the newly created folder and install python dependencies:
@@ -221,6 +230,7 @@ Copy Worker's files to the newly created folder and install python dependencies:
 cp -R ~/klara-github-repo/worker /var/projects/klara/worker/
 cd /var/projects/klara/worker/
 cp config-sample.py config.py
+source ~/klara-github-repo/install/activate.sh
 pip install -r ~/klara-github-repo/install/requirements.txt
 ```
 
@@ -283,9 +293,7 @@ In order to start Worker automatically at boot, please check [Supervisor install
 Next step would be starting Worker using `supervisorctl`:
 ```
 sudo supervisorctl update
-sudo supervisorctl start klara_worker
-```
-
+sudo supervisorctl start klara_worker 
 
 ## Installing Yara on worker machines
 
@@ -364,7 +372,7 @@ Scan Repository control file also has some interesting modifiers that can be use
 Requirements for installing web interface are:
 
 - web server running at least PHP 5.6
-- the following php5 extensions:
+- the following php7 extensions:
 
 ```
 apt install php7.0-fpm php7.0 php7.0-mysqli php7.0-curl php7.0-gd php7.0-intl php-pear php-imagick php7.0-imap php7.0-mcrypt php-memcache  php7.0-pspell php7.0-recode php7.0-sqlite3 php7.0-tidy php7.0-xmlrpc php7.0-xsl php7.0-mbstring php-gettext php-apcu
@@ -373,9 +381,10 @@ apt install php7.0-fpm php7.0 php7.0-mysqli php7.0-curl php7.0-gd php7.0-intl ph
 Once you have this installed, copy `/web/` folder to the HTTP server document root. Update and rename the following sample files:
 
 - `application/config/config.sample.php` -> `application/config/config.php`
+- `application/config/database.sample.php` -> `application/config/database.php`
 - `application/config/project_settings.sample.php` -> `application/config/project_settings.php`
 
-You must configure the `base_url`, `encryption_key` from `config.php` as well as other settings in `database.php`.
+You must configure the `base_url`, `encryption_key` from `config.php` as well as respective settings in `database.php` & `project_settings.php` .
 More info about this here:
 
 - https://www.codeigniter.com/user_guide/installation/upgrade_303.html
@@ -388,7 +397,7 @@ For your convenience, 2 `users`, 2 `groups` and 2 `scan repositories` have been 
 
 | Username      | Password                | Auth level     | Group ID     | Quota |
 | ------------- |:-------------:          | :----------    | ---------    | :---- |
-| admin         | `super_s3cure_password` | `16` (Admin)   | `2` (admins) | N/A (Admins don't have quuota) |
+| admin         | `super_s3cure_password` | `16` (Admin)   | `2` (admins) | N/A (Admins don't have quota) |
 | john          | `super_s3cure_password` | `4` (Observer) | `1` (main)   | 1000 scans / month |
 
 * Groups
