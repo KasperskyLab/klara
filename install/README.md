@@ -305,10 +305,10 @@ sudo apt -y install libtool automake libjansson-dev libmagic-dev libssl-dev buil
 # Usually it's good practice to check the hash of the archive you download, but here we can't, since it's from GH
 # 
 wget https://github.com/VirusTotal/yara/archive/vx.x.x.tar.gz
-cd yara-3.x.0
+cd yara-3.x.x
 ./bootstrap.sh
 
-./configure --prefix=/opt/yara-x.x.x --enable-cuckoo --enable-magic --enable-address-sanitizer --enable-dotnet
+./configure --prefix=/opt/yara-x.x.x --enable-address-sanitizer --enable-dotnet --enable-macho --enable-dex
 make -j4
 sudo make install
 ```
