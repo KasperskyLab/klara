@@ -294,16 +294,18 @@ Next step would be starting Worker using `supervisorctl`:
 ```
 sudo supervisorctl update
 sudo supervisorctl start klara_worker 
-
+```
 ## Installing Yara on worker machines
 
 Install the required dependencies:
 ```
 sudo apt -y install libtool automake libjansson-dev libmagic-dev libssl-dev build-essential
 
+#
 # Get the latest stable version of yara from https://github.com/virustotal/yara/releases
 # Usually it's good practice to check the hash of the archive you download, but here we can't, since it's from GH
-# 
+#
+
 wget https://github.com/VirusTotal/yara/archive/vx.x.x.tar.gz
 cd yara-3.x.x
 ./bootstrap.sh
