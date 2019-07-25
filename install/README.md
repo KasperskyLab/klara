@@ -392,24 +392,25 @@ More info about this here:
 - https://www.codeigniter.com/user_guide/installation/upgrade_303.html
 - https://codeigniter.com/user_guide/libraries/encryption.html
 - https://www.codeigniter.com/user_guide/database/configuration.html
+- https://www.nginx.com/resources/wiki/start/topics/recipes/codeigniter/ (The correct nginx configuration for codeigniter)
 
 For your convenience, 2 `users`, 2 `groups` and 2 `scan repositories` have been created:
 
-* Users:
+* Users (`users` DB table):
 
 | Username      | Password                | Auth level     | Group ID     | Quota |
 | ------------- |:-------------:          | :----------    | ---------    | :---- |
 | admin         | `super_s3cure_password` | `16` (Admin)   | `2` (admins) | N/A (Admins don't have quota) |
 | john          | `super_s3cure_password` | `4` (Observer) | `1` (main)   | 1000 scans / month |
 
-* Groups
+* Groups (`users_groups` DB table):
 
 | Group name    | `scan_filesets_list` (scan repositories) | Jail status |
 | ------------- | :-------------                           | ----------- |
 | main          | `[1,2]`                                  | 0 (OFF - Users are not jailed) |
 | admins        | `[1,2]`                                  | 0 (OFF - Users are not jailed) |
 
-* Scan Repositories (`scan_filesets` DB table)
+* Scan Repositories (`scan_filesets` DB table):
 
 | Scan Repository   |
 | -------------     |
