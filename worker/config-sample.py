@@ -13,7 +13,7 @@ refresh_new_jobs    = 60
 # Yara settings
 yara_path           = "/opt/yara-latest/bin/yara"
 # Use 4 threads to scan and scan dirs recursively
-yara_extra_args     = "-p 8 -r"
+yara_extra_args     = "-p 4 -r"
 yara_temp_dir       = "/tmp/"
 
 # md5sum settings
