@@ -121,9 +121,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`cnt`, `username`, `pass`, `auth`, `desc`, `api_auth_code`, `api_perms`, `api_status`, `group_cnt`, `notify_email`, `quota_searches`, `quota_curr_month`, `searches_curr_month`, `dateadded`, `ip_last_login`) VALUES
-(1, 'api', 'Please do not remove. Needed by users_api', 0, 'API Special User', NULL, '', 0, 1, '', 0, '', 0, '2018-04-18 01:03:19', 0),
-(2, 'admin', '$2y$10$Kc51V1hnE9XnZAeBqWOChu7kwIq/3dA8ehmQu5XJrnaLQNcFrRxHm', 16, 'Administrator Account', NULL, '', 0, 2, '', 0, '', 0, '2018-04-18 01:19:18', 0),
-(3, 'john', '$2y$10$omkUdYZebNqe.VgNqTgelupbNu.EIB8hVAF1V200R6R32nRsmCGZe', 4, 'Regular User with 1000 scans quota', NULL, '', 0, 1, '', 1000, '', 0, '2018-04-18 01:20:22', 0);
+(1, 'admin', '$2y$10$Kc51V1hnE9XnZAeBqWOChu7kwIq/3dA8ehmQu5XJrnaLQNcFrRxHm', 16, 'Administrator Account', NULL, '', 0, 2, '', 0, '', 0, CURRENT_TIMESTAMP, 0),
+(2, 'john', '$2y$10$omkUdYZebNqe.VgNqTgelupbNu.EIB8hVAF1V200R6R32nRsmCGZe', 4, 'Regular User with 1000 scans quota', NULL, '', 0, 1, '', 1000, '', 0, CURRENT_TIMESTAMP, 0);
 
 -- --------------------------------------------------------
 
