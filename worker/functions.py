@@ -73,6 +73,14 @@ def yara_scan(scan_options):
     yara_cmd += str(config.yara_extra_args) + " "
     yara_cmd += str(os.path.abspath(yara_rules_temp_file.name)) + " "
 
+    # Make sure the yara binary is executable
+    if not os.path.isfile(config.yara_path):
+        results['yara_errors'] = "Yara binary missing from %s".format(config.yara_path)
+        # Close the files!
+        null_file.close()
+        # Deleting temp files
+        os.remove(yara_rules_temp_file_fn)
+        return results
     # We make the scan in 2 steps:
     # 1) check if rules are valid
     # 2) Do the scan
