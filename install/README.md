@@ -353,6 +353,10 @@ It is entirely up to you how to organize your scan repositories. An example of o
 * `/vt`
 * `/unknown`
 
+## Filesystem optimisation
+
+Running Klara (or Yara) on a fast enough machine is very important for stability and getting back results fast enough. Pleas check some tips and tricks for [filesystem optimisations](features_fs_optimisations.md)
+
 ## Repository control
 
 KLara Workers check only if the repository control file exists in order to prepare the Yara scan. Contents of the file should only be an empty JSON string:
