@@ -4,18 +4,20 @@ import smtplib
 import json
 from email.mime.text import MIMEText
 
+
 class mysql():
+
     def __init__(self, torndb):
         # This is how we infer the connection
         self.db = torndb
 
     # Returns the location of the agent or None of query failed
     # Main Handler will write a log of this
-    def authorize_agent (self, auth):
+    def authorize_agent(self, auth):
         # or the query returnes more than 1 row
-        q = self.db.query  ("SELECT id " +
-                            "FROM agents " +
-                            "WHERE auth = %s", auth)
+        q = self.db.query("SELECT id " +
+                          "FROM agents " +
+                          "WHERE auth = %s", auth)
         # If we didn't get exactly 1 answer, there is a problem
         if len(q) == 0:
             return None
@@ -28,9 +30,9 @@ class mysql():
     # For all available jobs return their {id:x, 'fileset_scan'}
     # in a json list
     def fetch_available_jobs(self):
-        q = self.db.query  ("SELECT id, description " +
-                            "FROM jobs " +
-                            "WHERE `status` = 'new'")
+        q = self.db.query("SELECT id, description " +
+                          "FROM jobs " +
+                          "WHERE `status` = 'new'")
         our_answer = list()
         for entry in q:
             try:
@@ -38,14 +40,17 @@ class mysql():
                 if 'fileset_scan' in entry_description:
                     # If fileset scan is indeed in our description, then we add
                     # this entry in our answer
-                    our_answer.append({'id': entry['id'], 'fileset_scan': entry_description['fileset_scan']})
+                    our_answer.append({
+                        'id': entry['id'],
+                        'fileset_scan': entry_description['fileset_scan']
+                    })
             except Exception:
                 continue
         return json.dumps(our_answer)
 
     # Assigns the job id to the agent id.
     # Returns as status 'assigned' or 'rejected'
-    def assign_new_job (self, agent_id, job_id):
+    def assign_new_job(self, agent_id, job_id):
 
         # One final check + lock the row
         # Start transaction
@@ -71,7 +76,7 @@ class mysql():
                                 SET `status` = 'assigned', `agent_id` = %s \
                                 WHERE `id` = %s", agent_id, job_id)
                 answer['status'] = "accepted"
-                answer['rules']  = q[0]['rules']
+                answer['rules'] = q[0]['rules']
         else:
             answer['status'] = "rejected"
 
@@ -83,7 +88,7 @@ class mysql():
     # (notify_email, rules)
     # for a specific job
     def job_get_details(self, job_id):
-        assert (isinstance (job_id, int))
+        assert (isinstance(job_id, int))
 
         q = self.db.query  ("SELECT description, rules \
                             FROM jobs \
@@ -103,10 +108,10 @@ class mysql():
 
     # Function used to INSERT into db the list of results it receives
     ###### TODO: how do I make sure this insert was successful? ########
-    def save_agent_results (self, agent_id, results, job_status):
+    def save_agent_results(self, agent_id, results, job_status):
         validators.validate_agent_results(results)
-        agent_id    = str (int (agent_id))
-        job_id      = str (int (results['job_id']))
+        agent_id = str(int(agent_id))
+        job_id = str(int(results['job_id']))
 
         # Let's get the current job description
         self.db.execute("BEGIN")
@@ -124,9 +129,9 @@ class mysql():
             # Convert the job description into dict()
             job_description = json.loads(job['description'])
             # Add execution time + any errors / warnings reported by yara
-            job_description['execution_time']   = results['execution_time']
-            job_description['yara_errors']      = results['yara_errors']
-            job_description['yara_warnings']    = results['yara_warnings']
+            job_description['execution_time'] = results['execution_time']
+            job_description['yara_errors'] = results['yara_errors']
+            job_description['yara_warnings'] = results['yara_warnings']
 
             # Insert the hashes into DB!
             # Convert from json to dict
@@ -153,9 +158,11 @@ class mysql():
                                 job_id)
             except ValueError:
                 # We got an error while extracting the md5s
-                logging.error("Could not parse the JSON with md5s received from worker: " + str(results['md5_results']))
+                logging.error(
+                    "Could not parse the JSON with md5s received from worker: " + str(results['md5_results']))
             except Exception as e:
-                logging.error("General failure when trying to insert the job in db: " + str(e))
+                logging.error(
+                    "General failure when trying to insert the job in db: " + str(e))
 
         else:
             # If the current job doesn't exist any more, we just pass,
@@ -165,31 +172,36 @@ class mysql():
         # Commit transaction!
         self.db.execute("COMMIT")
 
-class notification():
-    #def __init__(self):
-    def email (self, data):
-        assert (isinstance (data, dict))
 
-        mail = MIMEText (data['body'])
+class notification():
+    # def __init__(self):
+
+    def email(self, data):
+        assert (isinstance(data, dict))
+
+        mail = MIMEText(data['body'])
         mail['From'] = config.notification_email_from
-        mail['To']   = data['to']
+        mail['To'] = data['to']
         mail['Subject'] = data['subject']
-        if len (data['to']) > 0 and config.notification_email_enabled:
+        if len(data['to']) > 0 and config.notification_email_enabled:
             try:
                 smtp = smtplib.SMTP(config.notification_email_smtp_srv)
-                smtp.sendmail  (config.notification_email_from,
-                                data['to'],
-                                mail.as_string ())
-                smtp.quit ()
+                smtp.sendmail(config.notification_email_from,
+                              data['to'],
+                              mail.as_string())
+                smtp.quit()
                 return True
-            # We are catching all exceptions, since we are running in daemon mode anyway
+            # We are catching all exceptions, since we are running in daemon
+            # mode anyway
             except:
                 return False
 
+
 class validators():
+
     @classmethod
     def validate_agent_results(cls, entry):
-        assert (isinstance (entry, dict))
+        assert (isinstance(entry, dict))
         assert ('job_id' in entry)
         assert ('finish_time' in entry)
         assert ('fileset_scan' in entry)

@@ -11,7 +11,7 @@ class Klsecurity extends CI_Model
         User auth is as follows:
         0   - disabled      - Unauthenticated user
         1   - suspended     - User suspended from system
-        2   - registered    - User allowed to view/add jobs, quotas enforeced
+        2   - registered    - User allowed to view/add jobs, quotas enforced
         4   - observer      - Not used
         8   - poweruser     - User allowed to view/add jobs, quotas disabled
         16  - Admin         - God
@@ -40,7 +40,8 @@ class Klsecurity extends CI_Model
         );
         // Centralized set of controllers that are external API endpoint
         $this->api_controllers = array(
-            "/api/jobs"
+            "/api/jobs",
+            "/api/users"
         );
 
         // Auth logic starts here!!
