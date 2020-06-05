@@ -10,7 +10,7 @@ class Jobs extends CI_Controller
 
     public function index()
     {
-        echo "Hello API JOBS";
+        echo "Hello API Jobs";
     }
 
     /* This function lists all the jobs allowed to be listed by the API user

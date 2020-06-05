@@ -40,7 +40,8 @@ class Klsecurity extends CI_Model
         );
         // Centralized set of controllers that are external API endpoint
         $this->api_controllers = array(
-            "/api/jobs"
+            "/api/jobs",
+            "/api/users"
         );
 
         // Auth logic starts here!!
