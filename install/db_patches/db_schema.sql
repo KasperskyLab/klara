@@ -230,7 +230,7 @@ ALTER TABLE `jobs_hashes`
 -- AUTO_INCREMENT for table `scan_filesets`
 --
 ALTER TABLE `scan_filesets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `users`
 --
