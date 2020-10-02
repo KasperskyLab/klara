@@ -1,8 +1,8 @@
-## Setting up systemctl
+## Setting up systemd
 
-Every machine / VM running either Dispatcher, Worker or both, may use [`systemctl`](https://www.freedesktop.org/software/systemd/man/systemctl.html) as an alternative to **supervisord** in order to automate staring and stopping of KLara scripts.
+Every machine / VM running either Dispatcher, Worker or both, may use [`systemd`](https://www.freedesktop.org/wiki/Software/systemd/) as an alternative to **supervisord** in order to automate starting and stopping of KLara scripts.
 
-**Systemctl** comes preinstalled with many distributions, including latest versions of Ubuntu, Debian, Fedora and more.
+[`Systemctl`](https://www.freedesktop.org/software/systemd/man/systemctl.html) comes preinstalled with many distributions, including latest versions of Ubuntu, Debian, Fedora and more.
 
 If you run Apache as a web server for KLara, you may already be familiar with systemd, as you can work with `apache2.service` using `systemctl`:
 
