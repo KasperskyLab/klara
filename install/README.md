@@ -143,7 +143,7 @@ notification_email_smtp_srv = "127.0.0.1"
 
 # MySQL / MariaDB settings for the Dispatcher to connect to the DB
 mysql_host      = "127.0.0.1"
-mysql_database  = "kl-klara"
+mysql_database  = "klara"
 mysql_user      = "root"
 mysql_password  = ""
 ```
@@ -183,7 +183,7 @@ In order to insert a new API key to be used by a KLara worker, a new row needs t
 
 ```
 mysql > use klara;
-mysql > INSERT INTO projetcs value ("","description here", "API auth code here");
+mysql > INSERT INTO agents value ("","description here", "API auth code here");
 ```
 
 ## Installing the Worker agent
