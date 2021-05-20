@@ -2,9 +2,9 @@
 
 ## Requirements for running Klara:
 
-- GNU/Linux (we recommend `Ubuntu 16.04` or latest LTS)
-- SQL DB Server: MySQL / MariaDB
-- Python 2.7
+- GNU/Linux (we recommend `Ubuntu 20.04` or latest LTS)
+- DB Server: MariaDB / MySQL
+- Python 3.5+
 - Python virtualenv package
 - Yara (installed on workers)
 
@@ -73,7 +73,7 @@ mysql klara < db_schema.sql
 
 Install the packages needed to run Dispatcher:
 ```
-sudo apt -y install python-virtualenv libmysqlclient-dev python-dev git
+sudo apt -y install python3-venv libmysqlclient-dev python-dev git
 ```
 
 We recommend running dispatcher on a non-privileged user. Create an user which will be responsible to run Worker as well as Dispatcher:
@@ -99,7 +99,7 @@ su projects
 mkdir /var/projects/klara/ -p
 mkdir /var/projects/klara/logs/
 # Create the virtual-env
-virtualenv ~/.virtualenvs/klara
+python3 -m venv ~/.virtualenvs/klara
 ```
 
 Clone the repository:
@@ -216,7 +216,7 @@ su projects
 mkdir /var/projects/klara/ -p
 mkdir /var/projects/klara/logs/
 # Create the virtual-env
-virtualenv ~/.virtualenvs/klara
+python3 -m venv ~/.virtualenvs/klara
 ```
 
 Clone the repository:

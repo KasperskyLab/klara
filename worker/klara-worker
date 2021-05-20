@@ -22,7 +22,7 @@ def _check_config_vars ():
     elif config.logging_level == "error":
         logging_level = logging.ERROR
     else:
-        print ("Invalid logging lvl in config:" + config.logging_level)
+        print("Invalid logging lvl in config:" + config.logging_level)
         logging_level = logging.WARNING
 
     # Setup logging
@@ -137,8 +137,8 @@ if __name__ == "__main__":
                     # Check if we have any results_path_replace_pattern instructions
                     if ('results_path_replace_pattern'  in repository_info and
                         'results_path_replace_with'     in repository_info and
-                        isinstance(repository_info['results_path_replace_pattern'], unicode) and
-                        isinstance(repository_info['results_path_replace_with'],    unicode)):
+                        isinstance(repository_info['results_path_replace_pattern'], str) and
+                        isinstance(repository_info['results_path_replace_with'],    str)):
                         # We have indeed a replace pattern!
                         # Take into consideration that available_job_fileset_scan has no trailing slash when
                         # Setting up the path_replace_with variable
