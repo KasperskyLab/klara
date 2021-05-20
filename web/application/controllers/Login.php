@@ -106,7 +106,7 @@ class Login extends CI_Controller
                 }
                 else
                 {
-                    // Password indeed match!
+                    // Passwords indeed match!
                     if (intval($row['auth']) <= $this->klsecurity->auth_suspended_level ())
                     {
                         $this->__forbidden_login ($row['username'], $row['cnt']);
