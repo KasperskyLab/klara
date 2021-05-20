@@ -377,7 +377,7 @@ Scan Repository control file also has some interesting modifiers that can be use
 
 Requirements for installing web interface are:
 
-- web server running at least PHP 5.6
+- web server running at least PHP 7.0 
 - the following php7 extensions:
 
 ```
