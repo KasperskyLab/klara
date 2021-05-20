@@ -11,12 +11,12 @@ class Global_functions
 
         // Maximum size for repository name
         $this->repository_post_max_len  = 20;
-        // Maximum rule name length when limiti
+        // Maximum rule name length when limiting
         $this->rule_name_start_trimm = 64;
     }
 
     // This function takes an extra third parameter which can be null or not
-    // It doesn't break the behavior of existing AJAX requests
+    // It doesn't break the behaviour of existing AJAX requests
     public function api_generate_response_json($status = '', $status_msg = '', $return_data = null)
     {
         return json_encode ($this->api_generate_response($status, $status_msg, $return_data));
@@ -270,16 +270,16 @@ class Global_functions
                 // Adding PRE field, as well as filtering for xss
                 // Check if API call and return a different msg
                 if ($this->CI->klsecurity->api_request())
-                    $non_ascii_message =    "Rule contains non-ASCII chars between '" . $message_before .
+                    $non_ascii_message =    "Rule contains non-ASCII characters between '" . $message_before .
                                             "' AND '" . $message_after . "'";
                 else
-                    $non_ascii_message =    "Rule contains non-ASCII chars between <pre>".
+                    $non_ascii_message =    "Rule contains non-ASCII characters between <pre>".
                                         $message_before . "</pre> AND <pre>".
                                         $message_after . "</pre>";
                 return $this->api_generate_error_json($non_ascii_message);
             }
             else
-                return $this->api_generate_error_json("Rule contains non-ASCII chars. Please retry");
+                return $this->api_generate_error_json("Rule contains non-ASCII characters. Please retry");
         }
 
         if (!is_array($yara_fileset_scan))

@@ -337,9 +337,9 @@ class Klsecurity extends CI_Model
         list($usec, $sec) = explode(' ', microtime());
         srand((float) $sec + ((float) $usec * 100000));
 
-        $valid_chars[1] = "0123456789abcdfghjkmnpqrstvwxyz";
-        $valid_chars[2] = "0123456789abcdfghjkmnpqrstvwxyzABCDEFGHIJKLMNOPQRSTUVWXZY";
-        $valid_chars[3] = "0123456789_!@#$%&*()-=+/abcdfghjkmnpqrstvwxzyABCDEFGHIJKLMNOPQRSTUVWXZY_!@#$%&*()-=+/";
+	$valid_chars[1] = "123456789abcdfghjkmnpqrstvwxyz";
+        $valid_chars[2] = "123456789abcdfghjkmnpqrstvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+        $valid_chars[3] = "123456789_!@#$%&*()-=+/abcdfghjkmnpqrstvwxyzABCDEFGHJKLMNPQRSTUVWXYZ_!@#$%&*()-=+/";
 
         $password  = "";
         $count     = 0;
