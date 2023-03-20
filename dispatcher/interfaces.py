@@ -159,10 +159,10 @@ class mysql():
             except ValueError:
                 # We got an error while extracting the md5s
                 logging.error(
-                    "Could not parse the JSON with md5s received from worker: " + str(results['md5_results']))
+                    'Could not parse the JSON with md5s received from worker: %s', results['md5_results'])
             except Exception as e:
                 logging.error(
-                    "General failure when trying to insert the job in db: " + str(e))
+                    'General failure when trying to insert the job in db: %s', e)
 
         else:
             # If the current job doesn't exist any more, we just pass,
