@@ -80,7 +80,7 @@
                             }
                             // If the supplied agent id was not found in our DB of agents, then something is really weird!
                             if (!$found_agent)
-                                $agent_info .= " Unknwon agent! Please contact the administrator";
+                                $agent_info .= " Unknown agent! Please contact the administrator";
                         }
                         // Repository name column
                         $repository = "N/A";

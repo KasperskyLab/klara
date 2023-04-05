@@ -715,7 +715,7 @@ class CI_Input {
 	 * only named with alpha-numeric text and a few other items.
 	 *
 	 * @param	string	$str	Input string
-	 * @param	bool	$fatal	Whether to terminate script exection
+	 * @param	bool	$fatal	Whether to terminate script execution
 	 *				or to return FALSE if an invalid
 	 *				key is encountered
 	 * @return	string|bool

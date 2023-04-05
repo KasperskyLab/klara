@@ -855,7 +855,7 @@ class CI_Image_lib {
 	 */
 	public function image_process_imagemagick($action = 'resize')
 	{
-		// Do we have a vaild library path?
+		// Do we have a valid library path?
 		if ($this->library_path === '')
 		{
 			$this->set_error('imglib_libpath_invalid');

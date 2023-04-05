@@ -76,7 +76,7 @@ $(document).ready(function()
         var job_first_rule_name = $(this).attr('job_first_rule_name');
 
         // Set the delete job modal
-        $('#modal_delete_job_title').text("Confim tag deletion");
+        $('#modal_delete_job_title').text("Confirm tag deletion");
         $('#modal_delete_job_body').html("Are you sure you want to delete job #<strong>" + job_id + "</strong> with first rule <strong>" + job_first_rule_name + "</strong>?");
         $('#modal_delete_job_id').val(job_id);
         $('#modal_delete_job_first_rule_name').val(job_first_rule_name);
@@ -95,7 +95,7 @@ $(document).ready(function()
         var job_id          = $(this).children("input[name='job_id']").val();
 
         // Set the modal now
-        $('#modal_restart_job_title').text("Confim job resubmission");
+        $('#modal_restart_job_title').text("Confirm job resubmission");
         $('#modal_restart_job_body').html("Are you sure you want to restart job #<strong>" + job_id + "</strong>?");
         $('#modal_restart_job_fileset_scan').val(fileset_scan);
         $("#modal_restart_job_id").val(job_id);
