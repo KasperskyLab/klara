@@ -369,7 +369,7 @@ class Global_functions
     // and inserts in DB a new job.
     // It also decreases the quota
     // WARNING: function assumes all the arguments have been sanitized / validated properly
-    // WARNING: no checkes are being made!
+    // WARNING: no checks are being made!
     public function jobs_add_db ($initial_repo_scan_fileset, $user_notify_email, $yara_rules)
     {
         $jobs_ids = array();
@@ -442,7 +442,7 @@ class Global_functions
             // Get the job from the DB, as well as owner username
             // We don't want to fetcha any other parts from users table (especially api key)
             //
-            // NOW We do not check the user permissions becase we know it has none :)
+            // NOW We do not check the user permissions because we know it has none :)
             // We just check if the share_key is valid...
             $this->CI->db->select('jobs.*, username');
             $this->CI->db->join('users', 'owner_id = users.cnt');

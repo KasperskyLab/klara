@@ -216,7 +216,7 @@ class Klsecurity extends CI_Model
         }
         // The user is authorized .. let him carry on
     }
-    // Function returns TRUE of FALSE if user is allowed to acess
+    // Function returns TRUE of FALSE if user is allowed to access
     // the $link_path provided
     public function link_visible_for_user($link_path  = '')
     {

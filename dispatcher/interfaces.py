@@ -14,7 +14,7 @@ class mysql():
     # Returns the location of the agent or None of query failed
     # Main Handler will write a log of this
     def authorize_agent(self, auth):
-        # or the query returnes more than 1 row
+        # or the query returns more than 1 row
         q = self.db.query("SELECT id " +
                           "FROM agents " +
                           "WHERE auth = %s", auth)
@@ -166,7 +166,7 @@ class mysql():
 
         else:
             # If the current job doesn't exist any more, we just pass,
-            # loosing the results?!
+            # losing the results?!
             pass
 
         # Commit transaction!

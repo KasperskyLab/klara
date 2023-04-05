@@ -57,7 +57,7 @@ class Jobs extends CI_Controller
         // Off we go
         $this->load->view('jobs_view', $view_data);
     }
-    // This is just the contructor used to display the HTML
+    // This is just the constructor used to display the HTML
     public function add()
     {
         $view_data = array();

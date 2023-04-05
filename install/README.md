@@ -355,7 +355,7 @@ It is entirely up to you how to organize your scan repositories. An example of o
 
 ## Filesystem optimisation
 
-Running Klara (or Yara) on a fast enough machine is very important for stability and getting back results fast enough. Pleas check some tips and tricks for [filesystem optimisations](features_fs_optimisations.md)
+Running Klara (or Yara) on a fast enough machine is very important for stability and getting back results fast enough. Please check some tips and tricks for [filesystem optimisations](features_fs_optimisations.md)
 
 ## Repository control
 

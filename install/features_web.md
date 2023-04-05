@@ -16,7 +16,7 @@ For example, if one worker (configured with `/mnt/storage/vircol/` as `virus_col
 /mnt/storage/vircol/_clean/
 ```
 
-then it has 3 scan repositories: `/vt_samples`, `/virus_repository` and `/_clean`. These 3 entires should be added to `scan_filesets` in order to make sure web users see all available scan repositories.
+then it has 3 scan repositories: `/vt_samples`, `/virus_repository` and `/_clean`. These 3 entries should be added to `scan_filesets` in order to make sure web users see all available scan repositories.
 
 
 ## User groups
