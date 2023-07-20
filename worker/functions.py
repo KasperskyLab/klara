@@ -40,7 +40,7 @@ def yara_scan(scan_options):
     else:
         yara_timeout = scan_options['timeout']
 
-    null_file = open(os.devnull, 'rw')
+    null_file = open(os.devnull, 'w')
     yara_rules_save_error = False
     try:
         # Generate a temporary file name
@@ -123,7 +123,7 @@ def yara_scan(scan_options):
     # Allow yara_process to receive a SIGPIPE if head_process exits.
     yara_process.stdout.close()
     # Now we wait for yara to finish....
-    (stdout_data, stderr_data) = head_process.communicate()
+    stdout_data = head_process.communicate()[0]
     time_end = int(time.time())
     # We want to run wait on yara in order to get its return code!
     yara_process.wait()
@@ -174,6 +174,6 @@ def generate_md5_from_results(yara_matched_files):
     # Prepare to run md5sum as Popen
     p = subprocess.Popen([config.md5sum_path] + yara_matched_files,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    (stdout_data, stderr_data) = p.communicate()
+    stdout_data = p.communicate()[0]
     # We want unique md5s
     return json.dumps(list(set(re.findall(pattern_for_md5sum_results, stdout_data))))

@@ -20,7 +20,7 @@ def fetch_available_jobs():
     # We want to catch any exception related to:
     # Not being able to connect (Requests exception) or json decodification
     except Exception as e:
-        logging.error("Exception: " + str(e))
+        logging.error('Exception: %s', e)
         return json.loads('{"status": "error", "status_msg": "connection_error"}')
 
 # After fetching the available jobs, ask dispatcher to assign us one job
@@ -37,7 +37,7 @@ def request_assign_job(job_id=-1):
     # We want to catch any exception related to:
     # Not being able to connect (Requests exception) or json decodification
     except Exception as e:
-        logging.error("Exception: " + str(e))
+        logging.error('Exception: %s', e)
         return json.loads('{"status": "error", "status_msg": "connection_error"}')
 
 # Function used to push the results back
@@ -55,5 +55,5 @@ def push_results(results):
                           "/worker_save_results", data=payload)
         return r.status_code
     except Exception as e:
-        logging.error("Exception: " + str(e))
+        logging.error('Exception: %s', e)
         return 500
