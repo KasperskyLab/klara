@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import logging
@@ -6,7 +6,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.escape
 import config
-import torndb
+import MySQLdb
 from interfaces import mysql as mysql_interface
 from interfaces import notification as notify_interface
 from interfaces import validators
@@ -162,6 +162,18 @@ class ApiHandler(BaseHandler):
 class MainHandler(BaseHandler):
     def get(self):
         self.write("Klara Job Dispatcher")
+
+class torndb:
+    """ Compatiblity wrapper to emulate torndb using the mysqlclient library.
+    """
+    class Connection:
+        def __init__(self, **kwargs):
+            self._conn = MySQLdb.connect(**kwargs)
+            self._cursor = self._conn.cursor(MySQLdb.cursors.DictCursor) 
+
+        def query(self, query, *args):
+            self._cursor.execute(query, args)
+            return self._cursor.fetchall()
 
 if __name__ == "__main__":
     _setup_logging()
