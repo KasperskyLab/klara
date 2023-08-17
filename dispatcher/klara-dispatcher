@@ -164,7 +164,7 @@ class MainHandler(BaseHandler):
         self.write("Klara Job Dispatcher")
 
 class torndb:
-    """ Compatiblity wrapper to emualte torndb using the mysqlclient library.
+    """ Compatiblity wrapper to emulate torndb using the mysqlclient library.
     """
     class Connection:
         def __init__(self, **kwargs):
